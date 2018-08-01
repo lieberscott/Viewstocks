@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #424243;
+  font-family: "Benton Sans", "Helvetica Neue", helvetica, arial, sans-serif;
+  margin: 2em;
+}
+
+a, a:hover, a:link, a:visited  {
+  color: white;
+  text-decoration: none;
+}
+
+footer {
+  text-align: center;
+}
+
+.addblock {
+  background: #21c25c;
+  display: inline-block;
+  padding-left: 5px;
+  height: 120px;
+  width: 100%;
+}
+
+.alert {
+  color: gray;
+  font-size: 12px;
+  margin-top: -8px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.col-md-4 {
+  padding-bottom: 10px;
+}
+
+.container {
+  background: #2a2a2b;
+  border-radius: 2px;
+  margin: 60px auto;
+}
+
+.desc {
+  color: gray;
+  font-size: 14px;
+}
+
+.exout {
+  color: gray;
+  cursor: pointer;
+  border-radius: 50%;
+  float: right;
+  margin: 5px;
+  height: 20px;
+  width: 20px;
+}
+
+.exout:hover {
+  color: dimgray;
+}
+
+.name {
+  color: black;
+  font-size: 18px;
+}
+
+.onecomponent {
+  background: lightgray;
+  display: inline-block;
+  padding-left: 5px;
+  height: 120px;
+  width: 100%;
+}
+
+.onecomponent:hover {
+  background: #ff4531;
+}
+
+.innertext {
+  background: white;
+  padding: 10px;
+  height: 100%;
+  width: 100%;
+}
+
+.sync {
+  padding: 12px;
+}
+
+#components {
+  font-family: 'Roboto', sans-serif;
+  padding: 0px 20px 20px 20px;
+}
+
+#main {
+  padding: 20px;
+  height: 500px;
+  width: 100%;
+}
