@@ -18,42 +18,39 @@ $(document).ready(async () => {
   }
   
   let today = year + "-" + month + "-" + day; // for API call
-  console.log(today);
   
   let seriesArr = [];
   
   for (let i = 0; i < symbolsArr.length; i++) {
     
     let obj = {};
-    //https://www.quandl.com/api/v3/datasets/WIKI/AAPL.json?start_date=2016-05-01&end_date=2018-07-01&order=asc&column_index=4&collapse=daily
-    await $.getJSON('https://www.quandl.com/api/v3/datasets/WIKI/' + symbolsArr[i] + '.json?api_key=bZ4_NUnHRGAFx3-yNN3y&start_date=2016-05-01&end_date=' + today + '&order=asc&column_index=4&collapse=daily', async (d) => {
-
-      let responseData = d.dataset.data;
+    await $.getJSON('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + symbolsArr[i] + '&types=quote,chart&range=5y&filter=symbol,companyName,date,minute,close', async (d) => {
+      
+      let sym = symbolsArr[i];
+      let responseData = d[sym].chart;
       
        let convertedData = responseData.map((item, ind) => {
         let arr = [];
         
-        arr = item[0].split("-");
-        let date = new Date(arr[0], arr[1], arr[2]).getTime();
+        arr = item.date.split("-");
+        let date = new Date(arr[0], arr[1]-1, arr[2]).getTime();
         
-        return [date, item[1]];
+        return [date, item.close];
         
-      })
+      });
       
       obj.name = symbolsArr[i];
       obj.type = "spline";
       obj.data = convertedData;
       seriesArr.push(obj);
       
-      let desc = d.dataset.name;
+      let desc = d[sym].quote.symbol + ": " + d[sym].quote.companyName;
       
       // add closeable component
       $('<div class="col-md-4"><div class="onecomponent"><div id="' + symbolsArr[i] + '" class="exout">x</div><div class="innertext name">' + symbolsArr[i] + '<div class="desc">' + desc + '</div></div></div></div>')
       .insertBefore(".insertbefore"); // ".insertbefore" class is on stock submission component, and only for this reason
-      
-      
-      
     })
+    
     .fail((err) => console.log(err));
     
   }
@@ -252,7 +249,7 @@ $(document).ready(async () => {
     // end theme options
     
     rangeSelector: {
-      selected: 5
+      selected: 2
     },
     credits: {
       enabled: false
@@ -279,8 +276,8 @@ $(document).ready(async () => {
       }
     }
     
-    if (unique && series.length < 10) {
-      await $.getJSON('https://www.quandl.com/api/v3/datasets/WIKI/' + sym + '.json?api_key=bZ4_NUnHRGAFx3-yNN3y&start_date=2016-05-01&end_date=' + today + '&order=asc&column_index=4&collapse=daily', (data) => {
+    if (unique && series.length < 6) {
+      await $.getJSON('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + sym + '&types=quote,chart&range=5y&filter=symbol,companyName,date,minute,close', (data) => {
         // still need better error handling (try an ajax request as in other challenges)
         socket.emit('add symbol', sym);
       })
@@ -299,24 +296,23 @@ $(document).ready(async () => {
   socket.on('add symbol', async (symbol) => {
     
     
-    console.log("hello");
     let chart = $("#main").highcharts();
     let sym = symbol.symbol.toUpperCase(); // for adding the symbol to the chart
     let responseData;
     let convertedData;
     let desc;
     
-    await $.getJSON('https://www.quandl.com/api/v3/datasets/WIKI/' + sym + '.json?api_key=bZ4_NUnHRGAFx3-yNN3y&start_date=2016-05-01&end_date=' + today + '&order=asc&column_index=4&collapse=daily', async (d) => {
+    await $.getJSON('https://api.iextrading.com/1.0/stock/market/batch?symbols=' + sym + '&types=quote,chart&range=5y&filter=symbol,companyName,date,minute,close', async (d) => {
       // still need better error handling (try an ajax request as in other challenges)
-      responseData = d.dataset.data;
+      let responseData = d[sym].chart;
       
       let convertedData = responseData.map((item, ind) => {
         let arr = [];
         
-        arr = item[0].split("-");
-        let date = new Date(arr[0], arr[1], arr[2]).getTime();
+        arr = item.date.split("-");
+        let date = new Date(arr[0], arr[1]-1, arr[2]).getTime();
         
-        return [date, item[1]];
+        return [date, item.close];
         
       })
       
@@ -330,7 +326,7 @@ $(document).ready(async () => {
         chart.series[0].remove();
       };
         
-      desc = d.dataset.name;
+      desc = d[sym].quote.symbol + ": " + d[sym].quote.companyName;
 
       // add closeable component
       $('<div class="col-md-4"><div class="onecomponent"><div id="' + sym + '" class="exout">x</div><div class="innertext name">' + sym + '<div class="desc">' + desc + '</div></div></div></div>')
